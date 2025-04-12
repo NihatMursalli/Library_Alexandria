@@ -141,11 +141,17 @@ class Reader(User):
 
 
 class Library:
-    def _init_(self):
+    def _init_(self, name: str):
+        self._name = name
         self._white_list: list[Reader] = []
         self._black_list: list[Reader] = []
         self._books: list[Book] = []
         self._users: list[Reader] = []
+
+    # Getter functions
+
+    def get_name(self):
+        return self._name
 
     # Library functionality
 
@@ -176,6 +182,11 @@ class Library:
         target_book.increase_stock(1)
         return self._borrowed_books
 
+    # String method for libary
+
+    def __str__(self):
+        return self.get_name()
+
 
 class Admin(User):
 
@@ -191,5 +202,23 @@ class Admin(User):
         self._library._books.remove(book)
 
 
+# This is probably the potential database below
+
+# Firstly, this should be the list of all the Libraries
+# The user will be able to choose from
+test_library = Library(name="Libraff")
+test_library.add_book(Book("The Midnight Library", "Matt Haig", "Fiction",
+                           2020, "Canongate Books", "Hardcover", 25, 50, "9781786892737", "1st", 14, "10%"))
+
+# print(test_library._books[0])
+print(test_library)
+
+libraries = [test_library]
+
+
 def main():
-    pass
+    print("Welcome to the general Library, please choose your Library below: ")
+    for i in len(libraries):
+        print(f"{i+1} {libraries[i]}")
+
+    target_library = input("Your input: ")
