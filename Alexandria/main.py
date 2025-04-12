@@ -72,6 +72,9 @@ class Book:
     def _str_(self):
         return f'{self._title}: {self._author}'
 
+    def increase_stock(self, number):
+        self._stock += number
+
 
 class User:
     def _init_(self, username: str, password: str, email: str, number: int, FIN: str):
@@ -116,13 +119,16 @@ class User:
 class Reader(User):
     # This class is for any casual user
     def _init_(self, wallet: int):
-        self._borrowed_books: list[Book] = []
+        self._borrowed_books: list[dict] = []
         self._wallet: int = wallet
 
     # Getters and Setters for reader
 
     def get_borrowed_books(self) -> list[dict]:
         return self._borrowed_books
+
+    def return_book(self, target_book):
+        self._borrowed_books.remove(target_book)
 
     def get_wallet(self) -> int:
         return self._wallet
@@ -132,13 +138,6 @@ class Reader(User):
 
     def set_walltet(self, current_wallet: int):
         self._wallet = current_wallet
-
-    # Reader functionality
-    def track_books():
-        pass
-
-    def return_books(self, target_book: Book) -> list[Book]:
-        pass
 
 
 class Library:
@@ -171,6 +170,11 @@ class Library:
 
     def view_book_list(self) -> list[Book]:
         return self._books
+
+    def return_books(self, target_book: Book, user) -> list[Book]:
+        user.return_book(target_book)
+        target_book.increase_stock(1)
+        return self._borrowed_books
 
 
 class Admin(User):
