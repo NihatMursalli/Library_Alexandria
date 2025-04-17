@@ -1,10 +1,10 @@
 class Book:
     # This classes name is self-explanitory
-    def _init_(self, title: str, author: str,
-               genre: str, publish_year: int,
-               publisher: str, type: str, price: int,
-               stock: int, ISBN: str, edition: str,
-               age_rating: int, discount: str):
+    def __init__(self, title: str, author: str,
+                 genre: str, publish_year: int,
+                 publisher: str, type: str, price: int,
+                 stock: int, ISBN: str, edition: str,
+                 age_rating: int, discount: str):
 
         self._title = title
         self._author = author
@@ -77,7 +77,7 @@ class Book:
 
 
 class User:
-    def _init_(self, username: str, password: str, email: str, number: int, FIN: str):
+    def __init__(self, username: str, password: str, email: str, number: int, FIN: str):
         self._username = username
         self._password = password
         self._email = email
@@ -118,7 +118,8 @@ class User:
 
 class Reader(User):
     # This class is for any casual user
-    def _init_(self, wallet: int):
+    def __init__(self, wallet: int, username: str, password: str, email: str, number: int, FIN: str):
+        super().__init__(username, password, email, number, FIN)
         self._borrowed_books: list[dict] = []
         self._wallet: int = wallet
 
@@ -136,12 +137,12 @@ class Reader(User):
     def set_borrowed_books(self, current_borrowed: list[dict]):
         self._borrowed_books = current_borrowed
 
-    def set_walltet(self, current_wallet: int):
+    def set_wallet(self, current_wallet: int):
         self._wallet = current_wallet
 
 
 class Library:
-    def _init_(self, name: str):
+    def __init__(self, name: str):
         self._name = name
         self._white_list: list[Reader] = []
         self._black_list: list[Reader] = []
@@ -182,6 +183,32 @@ class Library:
         target_book.increase_stock(1)
         return self._borrowed_books
 
+    def find_user(self, target_email: str) -> User:
+        users = self._white_list + self._black_list
+        for user in users:
+            if user.get_email() == target_email:
+                return user
+
+        return None
+
+    def register(self, user: User) -> User:
+        if self.find_user(user.get_email()) != None:
+            print("A user with this e-mail already exists! ")
+            return False
+
+        else:
+            self._white_list.append(user)
+            return True
+
+    def login(self, user_email, user_password):
+        user = self.find_user(user_email)
+        if user is not None:
+            if user._password == user_password:
+                return True
+        else:
+            print("There is no such user, try again! ")
+            return False
+
     # String method for libary
 
     def __str__(self):
@@ -190,8 +217,8 @@ class Library:
 
 class Admin(User):
 
-    def _init_(self, username: str, password: str, email: str, number: int, FIN: str, library: Library):
-        super()._init_(username, password, email, number, FIN)
+    def __init__(self, username: str, password: str, email: str, number: int, FIN: str, library: Library):
+        super().__init__(username, password, email, number, FIN)
         self._library = library
     # Admins functionality
 
@@ -200,6 +227,10 @@ class Admin(User):
 
     def delete_book(self, book: Book):
         self._library._books.remove(book)
+
+
+class Guest:
+    pass
 
 
 # This is probably the potential database below
@@ -217,8 +248,18 @@ libraries = [test_library]
 
 
 def main():
+    user_choice = input(
+        "Would you like to login(1), register(2) or stay guest(3): ")
+    if user_choice == "1":
+        pass
+
     print("Welcome to the general Library, please choose your Library below: ")
     for i in len(libraries):
         print(f"{i+1} {libraries[i]}")
 
     target_library = input("Your input: ")
+    for library in libraries:
+        if library.name == target_library:
+            current_library = library
+            break
+
